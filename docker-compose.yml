@@ -1,0 +1,46 @@
+version: '3'
+
+services:
+  # Nats Server
+  nats-server:
+    image: nats:latest
+    ports:
+      - "8222:8222"
+  # Client Gateway
+  client-gateway:
+    build: ./client-gateway
+    ports:
+      - "${CLIENT_GATEWAY_PORT}:4000"
+    volumes:
+      - ./client-gateway/src:/usr/src/app/src
+    command: npm run start:dev
+    environment:
+      - PORT=4000
+      - NATS_SERVERS=nats://nats-server:4222
+  # Products MSF
+  products-ms:
+    build: ./products-ms
+    volumes:
+      - ./products-ms/src:/usr/src/app/src
+    command: npm run start:dev
+    environment:
+      - DATABASE_URL=file:./dev.db
+      - NATS_SERVERS=nats://nats-server:4222
+  # Orders MS
+  orders-ms:
+    build: ./orders-ms
+    volumes:
+      - ./orders-ms/src:/usr/src/app/src
+    command: npm run start:dev
+    environment:
+      - DATABASE_URL=postgresql://user_db:6725990101@orders-db:5432/db_orders?schema=public
+      - NATS_SERVERS=nats://nats-server:4222
+    depends_on:
+      - orders-db
+  # Orders DB
+  orders-db:
+    image: postgres:16.2
+    environment:
+      - POSTGRES_USER=user_db
+      - POSTGRES_PASSWORD=6725990101
+      - POSTGRES_DB=db_orders
