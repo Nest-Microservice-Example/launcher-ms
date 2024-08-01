@@ -46,10 +46,23 @@ services:
     depends_on:
       - orders-db
   # ===================
+  # Auth Microservice
+  # ===================
+  auth-ms:
+    build: ./auth-ms
+    volumes:
+      - ./auth-ms/src:/usr/src/app/src
+    command: npm run start:dev
+    environment:
+      - DATABASE_URL=mongodb+srv://dba:TaT_2019@voters.6u1zcbx.mongodb.net/db_auth
+      - NATS_SERVERS=nats://nats-server:4222
+      - SECRET_KEY=a$cvq+5*&lu41ho1u))m-o55vlmp66q32mtlmv7lr$2c!ts#*)
+  # ===================
   # Orders Database
   # ===================
   orders-db:
     image: postgres:16.2
+    restart: always
     ports:
       - "5432:5432"
     environment:
