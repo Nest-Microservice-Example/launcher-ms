@@ -1,0 +1,71 @@
+version: '3'
+
+services:
+  # ===================
+  # NATS Server
+  # ===================
+  nats-server:
+    image: nats:latest
+  # ===================
+  # Client Gateway Api
+  # ===================
+  client-gateway:
+    build:
+      context: ./client-gateway
+      dockerfile: dockerfile.prod
+    image: client-gateway
+    ports:
+      - "${CLIENT_GATEWAY_PORT}:${CLIENT_GATEWAY_PORT}"
+    environment:
+      - PORT=${CLIENT_GATEWAY_PORT}
+      - NATS_SERVERS=nats://nats-server:4222
+  # ===================
+  # Auth Microservice
+  # ===================
+  auth-ms:
+    build:
+      context: ./auth-ms
+      dockerfile: dockerfile.prod
+    image: auth-ms
+    environment:
+      - DATABASE_URL=${AUTH_DATABASE_URL}
+      - NATS_SERVERS=nats://nats-server:4222
+      - SECRET_KEY=${AUTH_SECRET_KEY}
+  # ===================
+  # Products Microservice
+  # ===================
+  products-ms:
+    build:
+      context: ./products-ms
+      dockerfile: dockerfile.prod
+    environment:
+      - DATABASE_URL=file:./dev.db
+      - NATS_SERVERS=nats://nats-server:4222
+  # ===================
+  # Payments Microservice
+  # ===================
+  payments-ms:
+    build:
+      context: payments-ms
+      dockerfile: dockerfile.prod
+    ports:
+      - "${PAYMENTS_MS_PORT}:${PAYMENTS_MS_PORT}"
+    environment:
+      - PORT=${PAYMENTS_MS_PORT}
+      - NATS_SERVERS=nats://nats-server:4222
+      - STRIPE_SECRET_KEY=${STRIPE_SECRET_KEY}
+      - STRIPE_SUCCESS_URL=${STRIPE_SUCCESS_URL}
+      - STRIPE_CANCEL_URL=${STRIPE_CANCEL_URL}
+      - STRIPE_ENDPOINT_SECRET=${STRIPE_ENDPOINT_SECRET}
+  # ===================
+  # Orders Microservice
+  # ===================
+  orders-ms:
+    build:
+      context: ./orders-ms
+      dockerfile:  dockerfile.prod
+      args:
+        - ORDER_DATABASE_URL=${ORDER_DATABASE_URL}
+    environment:
+      - DATABASE_URL=${ORDER_DATABASE_URL}
+      - NATS_SERVERS=nats://nats-server:4222
