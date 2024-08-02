@@ -58,3 +58,14 @@ docker compose -f docker-compose.prod.yml build
 ```shell
 docker compose -f docker-compose.prod.yml up
 ```
+
+
+## Nats
+
+`docker run -d --name nats-server -p 4222:4222 -p 8222:8222 nats`
+
+## Build Docker Image Prod
+
+```shell
+docker build -f dockerfile.prod -t products-ms .
+```
