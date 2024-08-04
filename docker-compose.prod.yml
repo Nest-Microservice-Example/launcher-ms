@@ -13,7 +13,7 @@ services:
     build:
       context: ./client-gateway
       dockerfile: dockerfile.prod
-    image: us-east4-docker.pkg.dev/store-ms-431319/store-ms/client-gateway
+    image: us-central1-docker.pkg.dev/store-ms-431319/store-repository/client-gateway
     ports:
       - "${CLIENT_GATEWAY_PORT}:${CLIENT_GATEWAY_PORT}"
     environment:
@@ -26,7 +26,7 @@ services:
     build:
       context: ./auth-ms
       dockerfile: dockerfile.prod
-    image: us-east4-docker.pkg.dev/store-ms-431319/store-ms/auth-ms
+    image: us-central1-docker.pkg.dev/store-ms-431319/store-repository/auth-ms
     environment:
       - DATABASE_URL=${AUTH_DATABASE_URL}
       - NATS_SERVERS=nats://nats-server:4222
@@ -38,7 +38,7 @@ services:
     build:
       context: ./products-ms
       dockerfile: dockerfile.prod
-    image: us-east4-docker.pkg.dev/store-ms-431319/store-ms/products-ms
+    image: us-central1-docker.pkg.dev/store-ms-431319/store-repository/products-ms
     environment:
       - DATABASE_URL=file:./dev.db
       - NATS_SERVERS=nats://nats-server:4222
@@ -49,7 +49,7 @@ services:
     build:
       context: payments-ms
       dockerfile: dockerfile.prod
-    image: us-east4-docker.pkg.dev/store-ms-431319/store-ms/payments-ms
+    image: us-central1-docker.pkg.dev/store-ms-431319/store-repository/payments-ms
     ports:
       - "${PAYMENTS_MS_PORT}:${PAYMENTS_MS_PORT}"
     environment:
@@ -68,7 +68,7 @@ services:
       dockerfile:  dockerfile.prod
       args:
         - ORDER_DATABASE_URL=${ORDER_DATABASE_URL}
-    image: us-east4-docker.pkg.dev/store-ms-431319/store-ms/orders-ms
+    image: us-central1-docker.pkg.dev/store-ms-431319/store-repository/orders-ms
     environment:
       - DATABASE_URL=${ORDER_DATABASE_URL}
       - NATS_SERVERS=nats://nats-server:4222
